@@ -2,7 +2,7 @@
 
 A mobile-first health dashboard and emergency call shortcut built with plain HTML, CSS and JavaScript. No frameworks, no build step, no backend.
 
-**Important: every health reading in this app is simulated demo data. It is not a real sensor measurement and not a medical measurement.**
+**Important: HealthGuard Lite is a wellness app, not a medical device.** Heart rate is an estimate from your fingertip and camera, steps are estimated from motion sensors, and blood oxygen (SpO₂) is never estimated.
 
 ## Files
 `index.html`, `style.css`, `script.js`, `manifest.json`, `service-worker.js`, `icons/`
@@ -25,17 +25,28 @@ A mobile-first health dashboard and emergency call shortcut built with plain HTM
 The Profile screen also shows an **Install app** button when Chrome offers installation.
 
 ## 4. How offline caching works
-On first load over HTTPS or localhost, `service-worker.js` saves the app files (pages, styles, script, icons) in the browser cache. After that, the app opens without internet, and the Offline chip appears when the device is offline. The cache is named `healthguard-lite-v1`. If you change any file, change that version string so phones pick up the update.
+On first load over HTTPS or localhost, `service-worker.js` saves the app files (pages, styles, script, icons) in the browser cache. After that, the app opens without internet, and the Offline chip appears when the device is offline. The cache is named `healthguard-lite-v2`. If you change any file, change that version string so phones pick up the update.
 
-## 5. Simulated data
-Readings (heart rate, SpO₂, steps) are random plausible numbers generated in the browser each time you press **Refresh readings**. Up to 100 records are kept in `localStorage` on the same browser and device, and each one is labelled Demo. The app does not diagnose anything and cannot detect emergencies.
+## 5. Sensor features
+**Heart rate (camera).** Press Measure heart rate, cover the rear camera and flash with a fingertip, and hold still for 30 seconds. The app reads tiny colour changes in the video, checks signal quality, and shows a number only if the signal is clean and two independent calculations agree. Otherwise it shows Not measured and saves nothing. It is a rough wellness estimate: skin tone, cold fingers, pressure, movement and phone hardware all affect it. If the flash can't be switched on from the browser (common on iPhone), use bright steady light.
+
+**Steps (motion).** Press Start counting on the Steps card. Steps are estimated from the phone's motion sensor and counted only while the app is open and the screen is on. Daily totals are saved on this device. On iPhone, Safari asks for motion access when you tap the button. Carrying the phone in a pocket or hand changes accuracy, and shaking or other repetitive movement can add false steps.
+
+**SpO₂.** Shown as Unavailable. A phone camera cannot measure it safely, and the app never invents it. It would need a genuine compatible pulse oximeter or health data source.
+
+**Old demo records.** If the earlier simulated readings are still stored in your browser, they stay in History labelled Old demo. Clear history removes them.
 
 ## 6. Limitations
 **Emergency calling**
-- The SOS button only opens a confirmation. If you confirm, it opens your phone's dialer using a `tel:` link. You still press call yourself.
-- Nothing is sent automatically: no SMS, no alerts, no location, no contact with emergency services.
-- `tel:` links need a device with calling. Most desktop browsers will do nothing or ask which app to use.
+- The SOS button only opens a confirmation. There you can choose Call now (opens your dialer through a `tel:` link) or Open text message (opens your messaging app with a drafted message through an `sms:` link). You still press call or send yourself.
+- The app cannot tell whether you sent the message. Nothing is sent automatically: no alerts, no location, no contact with emergency services.
+- `tel:` and `sms:` links need a device with calling and messaging. Most desktop browsers will do nothing or ask which app to use.
+- Your emergency contact is stored only in this browser.
 - In a real emergency, call your local emergency number directly.
+
+**Sensors**
+- Camera and motion access need HTTPS (the Vercel link is fine) and your permission. Neither works from a plain file.
+- Step counting stops when the app is in the background or the screen is off.
 
 **PWA and storage**
 - Installation and offline mode need HTTPS or localhost. They do not work when opening the file directly (`file://`).

@@ -1,4 +1,4 @@
-const CACHE = 'healthguard-lite-v1';
+const CACHE = 'healthguard-lite-v2';
 const ASSETS = [
   './', 'index.html', 'style.css', 'script.js', 'manifest.json',
   'icons/icon.svg', 'icons/icon-192.png', 'icons/icon-512.png', 'icons/icon-maskable-512.png'

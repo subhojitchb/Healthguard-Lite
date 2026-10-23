@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>HealthGuard Lite</title>
-<meta name="description" content="HealthGuard Lite: a calm demo health dashboard with an emergency call shortcut.">
+<meta name="description" content="HealthGuard Lite: wellness estimates from your phone sensors and an emergency contact shortcut.">
 <meta name="theme-color" content="#0F8B8D">
 <link rel="icon" href="icons/icon.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="icons/icon-192.png">
@@ -39,7 +39,7 @@
   <main class="main">
     <header class="topbar">
       <div class="brand"><svg class="ico"><use href="#i-heart"/></svg> HealthGuard <b>Lite</b></div>
-      <span class="chip chip-demo">Demo data</span>
+      <span class="chip chip-demo">Not medical</span>
       <span class="chip chip-offline" id="offlineChip" hidden>Offline</span>
     </header>
 
@@ -54,8 +54,9 @@
         <article class="card hero" aria-label="Heart rate">
           <div class="hero-text">
             <span class="label">Heart rate</span>
+            <span class="state" id="hrState">Not measured</span>
             <div class="big"><span id="hrValue">--</span><small>BPM</small></div>
-            <p class="summary" id="summary">Tap refresh to load a demo reading.</p>
+            <p class="summary" id="summary">Not measured yet. Use Measure heart rate for a 30-second camera scan.</p>
           </div>
           <svg class="pulse" viewBox="0 0 120 120" aria-hidden="true">
             <circle class="pulse-ring" cx="60" cy="60" r="34"/>
@@ -66,26 +67,29 @@
 
         <article class="card metric" aria-label="Blood oxygen">
           <div class="metric-head"><svg class="ico teal"><use href="#i-drop"/></svg><span class="label">SpO₂</span></div>
-          <div class="mid"><span id="spo2Value">--</span><small>%</small></div>
+          <div><div class="mid na" id="spo2Value">Unavailable</div>
+            <p class="small muted metric-note">Needs a compatible pulse oximeter. HealthGuard never estimates it.</p></div>
         </article>
 
         <article class="card metric" aria-label="Daily steps">
           <div class="metric-head"><svg class="ico teal"><use href="#i-steps"/></svg><span class="label">Steps today</span></div>
-          <div class="mid"><span id="stepsValue">--</span></div>
+          <div><div class="mid"><span id="stepsValue">--</span></div>
+            <p class="small muted metric-note" id="stepsStatus">Not counting.</p>
+            <button class="btn btn-quiet btn-sm" id="stepsBtn" type="button">Start counting</button></div>
         </article>
 
         <aside class="notice" role="note">
-          <strong>Demo data only.</strong> These numbers are simulated for demonstration. They are not medical measurements and cannot detect health problems.
+          <strong>Wellness estimates only.</strong> Camera heart rate and motion steps are approximate. They are not medical measurements and cannot diagnose or detect health problems.
         </aside>
 
-        <button class="btn btn-primary refresh" id="refreshBtn" type="button">
-          <svg class="ico"><use href="#i-refresh"/></svg><span>Refresh readings</span>
+        <button class="btn btn-primary refresh" id="measureBtn" type="button">
+          <svg class="ico"><use href="#i-heart"/></svg><span>Measure heart rate</span>
         </button>
 
         <section class="card recent" aria-labelledby="recentTitle">
           <h2 id="recentTitle">Recent activity</h2>
           <ul class="list" id="recentList"></ul>
-          <p class="muted empty" id="recentEmpty" hidden>No saved readings yet. Refresh to save your first demo reading.</p>
+          <p class="muted empty" id="recentEmpty" hidden>No saved measurements yet. Take a heart-rate scan to save one.</p>
         </section>
       </div>
     </section>
@@ -94,11 +98,12 @@
     <section class="view" id="view-history" data-view="history" aria-labelledby="historyTitle" hidden>
       <div class="intro">
         <h1 id="historyTitle" tabindex="-1">History</h1>
-        <p class="muted">Simulated demo readings saved on this device (latest 100).</p>
+        <p class="muted">Measured heart-rate scans and daily step estimates, saved only on this device.</p>
       </div>
       <div class="card chart-card" id="chartCard">
-        <div class="card-row"><h2>Heart rate trend</h2><span class="chip chip-demo">Demo data</span></div>
-        <div class="chart-wrap"><canvas id="chart" role="img" aria-label="Line chart of recent demo heart-rate readings"></canvas></div>
+        <div class="card-row"><h2>Heart rate trend</h2><span class="chip chip-demo">Camera estimates</span></div>
+        <div class="chart-wrap"><canvas id="chart" role="img" aria-label="Line chart of recent measured heart-rate readings"></canvas></div>
+        <p class="muted chart-empty" id="chartEmpty" hidden>The chart appears after your first camera measurement.</p>
         <p class="muted small" id="chartNote"></p>
       </div>
       <div class="card" id="historyListCard">
@@ -106,11 +111,17 @@
           <button class="btn btn-quiet" id="clearBtn" type="button"><svg class="ico"><use href="#i-trash"/></svg><span>Clear history</span></button>
         </div>
         <ul class="list" id="historyList"></ul>
+        <p class="muted empty" id="historyListEmpty" hidden>No heart-rate scans saved yet.</p>
+      </div>
+      <div class="card" id="stepsHistoryCard" hidden>
+        <div class="card-row"><h2>Daily steps</h2><span class="chip chip-demo">Phone estimate</span></div>
+        <ul class="list" id="stepsHistoryList"></ul>
+        <p class="muted small">Counted only while HealthGuard Lite was open on this phone.</p>
       </div>
       <div class="card empty-card" id="historyEmpty" hidden>
         <svg class="ico big-ico teal"><use href="#i-history"/></svg>
         <h2>No readings yet</h2>
-        <p class="muted">Go to Home and press Refresh readings. Each refresh saves one simulated reading here.</p>
+        <p class="muted">Go to Home and press Measure heart rate, or start counting steps. Results are saved here.</p>
         <a class="btn btn-primary" href="#home">Go to Home</a>
       </div>
     </section>
@@ -119,7 +130,7 @@
     <section class="view" id="view-emergency" data-view="emergency" aria-labelledby="emTitle" hidden>
       <div class="intro">
         <h1 id="emTitle" tabindex="-1">Emergency</h1>
-        <p class="muted">A quick shortcut to call your saved contact. Nothing is sent or dialled until you confirm.</p>
+        <p class="muted">A quick shortcut to call or text your saved contact. Nothing is dialled or sent unless you press call or send in your phone's own app.</p>
       </div>
       <div class="sos-stage">
         <button class="sos" id="sosBtn" type="button" aria-label="SOS: call emergency contact">
@@ -139,7 +150,7 @@
       </div>
       <p class="status" id="sosStatus" role="status" aria-live="polite"></p>
       <aside class="notice" role="note">
-        HealthGuard Lite does not send alerts, texts or your location, and it cannot contact emergency services for you. In a real emergency, call your local emergency number directly.
+        HealthGuard Lite never sends texts or alerts by itself, never shares your location and cannot contact emergency services. The text option only opens a draft in your messaging app. In a real emergency, call your local emergency number directly.
       </aside>
     </section>
 
@@ -187,20 +198,61 @@
 </div>
 
 <dialog id="sosDialog" aria-labelledby="sosTitle">
-  <h2 id="sosTitle">Call your emergency contact?</h2>
-  <p>This will open your phone's dialer for <strong id="dName"></strong> at <strong id="dNum"></strong>. You can still cancel there.</p>
-  <div class="actions">
+  <h2 id="sosTitle">Reach your emergency contact?</h2>
+  <p>Choose how to contact <strong id="dName"></strong> at <strong id="dNum"></strong>. Your phone opens its dialer or messaging app next, and you press call or send yourself.</p>
+  <div class="actions stack">
     <a class="btn btn-sos" id="callLink" href="#">Call now</a>
+    <a class="btn btn-primary" id="smsLink" href="#">Open text message</a>
     <button class="btn btn-quiet" type="button" data-close>Cancel</button>
   </div>
 </dialog>
 
 <dialog id="clearDialog" aria-labelledby="clearTitle">
   <h2 id="clearTitle">Clear all saved readings?</h2>
-  <p>This removes every demo reading stored on this device. It can't be undone.</p>
+  <p>This removes every saved heart-rate reading and daily step total from this device. It can't be undone.</p>
   <div class="actions">
     <button class="btn btn-primary" type="button" id="confirmClear">Clear history</button>
     <button class="btn btn-quiet" type="button" data-close>Keep history</button>
+  </div>
+</dialog>
+
+<dialog id="scanDialog" aria-labelledby="scanTitle">
+  <h2 id="scanTitle">Heart-rate scan</h2>
+  <div id="scanGuide">
+    <ol class="scan-steps">
+      <li>Sit down and rest your hand on a table. Stay relaxed.</li>
+      <li>Cover the rear camera and flash completely with your fingertip. Press gently, not hard.</li>
+      <li>Hold still and stay quiet for about 30 seconds.</li>
+    </ol>
+    <p class="muted small">The scan estimates your pulse from tiny colour changes in your fingertip. It is a wellness estimate, not a medical measurement, and it can fail. When the signal is not clean enough, it shows Not measured instead of a number.</p>
+    <p class="status warn" id="scanSupport"></p>
+    <div class="actions">
+      <button class="btn btn-primary" type="button" id="startScan">Start scan</button>
+      <button class="btn btn-quiet" type="button" data-close>Cancel</button>
+    </div>
+  </div>
+  <div id="scanLive" hidden>
+    <div class="scan-stage">
+      <svg class="ring" viewBox="0 0 120 120" aria-hidden="true"><circle class="ring-bg" cx="60" cy="60" r="52"/><circle class="ring-fg" id="ringFg" cx="60" cy="60" r="52"/></svg>
+      <video id="scanVideo" playsinline muted aria-hidden="true"></video>
+    </div>
+    <p class="scan-time" id="scanTime">30 s left</p>
+    <p class="scan-msg" id="scanMsg" role="status" aria-live="polite">Starting camera…</p>
+    <div class="q"><span class="q-bars" id="qBars" data-level="0"><i></i><i></i><i></i></span><span id="qText">Searching for fingertip</span></div>
+    <canvas id="scanWave" height="64" aria-hidden="true"></canvas>
+    <p class="muted small" id="scanFlash"></p>
+    <p class="muted small">Live check is only a hint. The result is checked after the scan.</p>
+    <button class="btn btn-quiet btn-block" type="button" id="stopScan">Cancel scan</button>
+  </div>
+  <div id="scanResult" hidden>
+    <p class="pill" id="resState"></p>
+    <div class="res-num" id="resNum" hidden><span id="resBpm"></span><small>BPM</small></div>
+    <p id="resText"></p>
+    <p class="muted small" id="resTips"></p>
+    <div class="actions">
+      <button class="btn btn-primary" type="button" id="againScan">Scan again</button>
+      <button class="btn btn-quiet" type="button" data-close>Close</button>
+    </div>
   </div>
 </dialog>
 
