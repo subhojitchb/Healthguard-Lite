@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>HealthGuard Lite</title>
+<meta name="description" content="HealthGuard Lite: a calm demo health dashboard with an emergency call shortcut.">
+<meta name="theme-color" content="#0F8B8D">
+<link rel="icon" href="icons/icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <defs>
+    <symbol id="i-home" viewBox="0 0 24 24"><path d="M3 11l9-8 9 8M5 10v10h5v-6h4v6h5V10"/></symbol>
+    <symbol id="i-history" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></symbol>
+    <symbol id="i-phone" viewBox="0 0 24 24"><path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2z"/></symbol>
+    <symbol id="i-user" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/></symbol>
+    <symbol id="i-heart" viewBox="0 0 24 24"><path d="M12 21s-7-4.6-9.3-9A5.3 5.3 0 0 1 12 6.2 5.3 5.3 0 0 1 21.3 12C19 16.4 12 21 12 21z"/></symbol>
+    <symbol id="i-drop" viewBox="0 0 24 24"><path d="M12 3s6 6.2 6 10.5a6 6 0 0 1-12 0C6 9.2 12 3 12 3z"/></symbol>
+    <symbol id="i-steps" viewBox="0 0 24 24"><circle cx="13" cy="4.5" r="2"/><path d="M7 21l3-6 3 3v4M10 15l1-5 4 2 2 3M11 10L8 12"/></symbol>
+    <symbol id="i-refresh" viewBox="0 0 24 24"><path d="M20 11a8 8 0 1 0-2.3 5.7M20 4v7h-7"/></symbol>
+    <symbol id="i-trash" viewBox="0 0 24 24"><path d="M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13"/></symbol>
+  </defs>
+</svg>
+
+<div class="shell">
+  <nav class="nav" aria-label="Main">
+    <div class="nav-brand" aria-hidden="true">
+      <svg class="ico"><use href="#i-heart"/></svg><span>HealthGuard</span>
+    </div>
+    <a href="#home" data-nav="home"><svg class="ico"><use href="#i-home"/></svg><span>Home</span></a>
+    <a href="#history" data-nav="history"><svg class="ico"><use href="#i-history"/></svg><span>History</span></a>
+    <a href="#emergency" data-nav="emergency"><svg class="ico"><use href="#i-phone"/></svg><span>Emergency</span></a>
+    <a href="#profile" data-nav="profile"><svg class="ico"><use href="#i-user"/></svg><span>Profile</span></a>
+  </nav>
+
+  <main class="main">
+    <header class="topbar">
+      <div class="brand"><svg class="ico"><use href="#i-heart"/></svg> HealthGuard <b>Lite</b></div>
+      <span class="chip chip-demo">Demo data</span>
+      <span class="chip chip-offline" id="offlineChip" hidden>Offline</span>
+    </header>
+
+    <!-- HOME -->
+    <section class="view" id="view-home" data-view="home" aria-labelledby="greeting">
+      <div class="intro">
+        <h1 id="greeting" tabindex="-1">Hello</h1>
+        <p class="muted" id="today"></p>
+      </div>
+
+      <div class="home-grid">
+        <article class="card hero" aria-label="Heart rate">
+          <div class="hero-text">
+            <span class="label">Heart rate</span>
+            <div class="big"><span id="hrValue">--</span><small>BPM</small></div>
+            <p class="summary" id="summary">Tap refresh to load a demo reading.</p>
+          </div>
+          <svg class="pulse" viewBox="0 0 120 120" aria-hidden="true">
+            <circle class="pulse-ring" cx="60" cy="60" r="34"/>
+            <path class="pulse-heart" d="M60 92S30 73 20.5 54A22.5 22.5 0 0 1 60 33.5 22.5 22.5 0 0 1 99.5 54C90 73 60 92 60 92z"/>
+            <path class="pulse-line" d="M8 62h28l8-14 12 30 10-22 6 6h40"/>
+          </svg>
+        </article>
+
+        <article class="card metric" aria-label="Blood oxygen">
+          <div class="metric-head"><svg class="ico teal"><use href="#i-drop"/></svg><span class="label">SpO₂</span></div>
+          <div class="mid"><span id="spo2Value">--</span><small>%</small></div>
+        </article>
+
+        <article class="card metric" aria-label="Daily steps">
+          <div class="metric-head"><svg class="ico teal"><use href="#i-steps"/></svg><span class="label">Steps today</span></div>
+          <div class="mid"><span id="stepsValue">--</span></div>
+        </article>
+
+        <aside class="notice" role="note">
+          <strong>Demo data only.</strong> These numbers are simulated for demonstration. They are not medical measurements and cannot detect health problems.
+        </aside>
+
+        <button class="btn btn-primary refresh" id="refreshBtn" type="button">
+          <svg class="ico"><use href="#i-refresh"/></svg><span>Refresh readings</span>
+        </button>
+
+        <section class="card recent" aria-labelledby="recentTitle">
+          <h2 id="recentTitle">Recent activity</h2>
+          <ul class="list" id="recentList"></ul>
+          <p class="muted empty" id="recentEmpty" hidden>No saved readings yet. Refresh to save your first demo reading.</p>
+        </section>
+      </div>
+    </section>
+
+    <!-- HISTORY -->
+    <section class="view" id="view-history" data-view="history" aria-labelledby="historyTitle" hidden>
+      <div class="intro">
+        <h1 id="historyTitle" tabindex="-1">History</h1>
+        <p class="muted">Simulated demo readings saved on this device (latest 100).</p>
+      </div>
+      <div class="card chart-card" id="chartCard">
+        <div class="card-row"><h2>Heart rate trend</h2><span class="chip chip-demo">Demo data</span></div>
+        <div class="chart-wrap"><canvas id="chart" role="img" aria-label="Line chart of recent demo heart-rate readings"></canvas></div>
+        <p class="muted small" id="chartNote"></p>
+      </div>
+      <div class="card" id="historyListCard">
+        <div class="card-row"><h2>Recent readings</h2>
+          <button class="btn btn-quiet" id="clearBtn" type="button"><svg class="ico"><use href="#i-trash"/></svg><span>Clear history</span></button>
+        </div>
+        <ul class="list" id="historyList"></ul>
+      </div>
+      <div class="card empty-card" id="historyEmpty" hidden>
+        <svg class="ico big-ico teal"><use href="#i-history"/></svg>
+        <h2>No readings yet</h2>
+        <p class="muted">Go to Home and press Refresh readings. Each refresh saves one simulated reading here.</p>
+        <a class="btn btn-primary" href="#home">Go to Home</a>
+      </div>
+    </section>
+
+    <!-- EMERGENCY -->
+    <section class="view" id="view-emergency" data-view="emergency" aria-labelledby="emTitle" hidden>
+      <div class="intro">
+        <h1 id="emTitle" tabindex="-1">Emergency</h1>
+        <p class="muted">A quick shortcut to call your saved contact. Nothing is sent or dialled until you confirm.</p>
+      </div>
+      <div class="sos-stage">
+        <button class="sos" id="sosBtn" type="button" aria-label="SOS: call emergency contact">
+          <span class="sos-ring" aria-hidden="true"></span><span class="sos-text">SOS</span>
+        </button>
+        <p class="sos-hint">Press to review and confirm a call</p>
+      </div>
+      <div class="card" id="contactCard" hidden>
+        <span class="label">Emergency contact</span>
+        <p class="contact-name" id="emName"></p>
+        <p class="contact-num" id="emNum"></p>
+      </div>
+      <div class="card empty-card" id="noContact" hidden>
+        <h2>No emergency contact yet</h2>
+        <p class="muted">Add a name and phone number in your profile to enable the call shortcut.</p>
+        <a class="btn btn-primary" href="#profile">Add contact</a>
+      </div>
+      <p class="status" id="sosStatus" role="status" aria-live="polite"></p>
+      <aside class="notice" role="note">
+        HealthGuard Lite does not send alerts, texts or your location, and it cannot contact emergency services for you. In a real emergency, call your local emergency number directly.
+      </aside>
+    </section>
+
+    <!-- PROFILE -->
+    <section class="view" id="view-profile" data-view="profile" aria-labelledby="profTitle" hidden>
+      <div class="intro">
+        <h1 id="profTitle" tabindex="-1">Profile</h1>
+        <p class="muted">Stored only in this browser. Nothing leaves your device.</p>
+      </div>
+      <form class="card form" id="profileForm" novalidate>
+        <div class="field">
+          <label for="pName">Your name</label>
+          <input id="pName" name="name" type="text" autocomplete="name" maxlength="50" aria-describedby="eName">
+          <span class="err" id="eName"></span>
+        </div>
+        <div class="field">
+          <label for="pAge">Age</label>
+          <input id="pAge" name="age" type="number" inputmode="numeric" min="1" max="120" aria-describedby="eAge">
+          <span class="err" id="eAge"></span>
+        </div>
+        <div class="field">
+          <label for="cName">Emergency contact name</label>
+          <input id="cName" name="cName" type="text" autocomplete="off" maxlength="50" aria-describedby="eCName">
+          <span class="err" id="eCName"></span>
+        </div>
+        <div class="field">
+          <label for="cPhone">Emergency contact phone</label>
+          <input id="cPhone" name="cPhone" type="tel" inputmode="tel" autocomplete="off" maxlength="24" placeholder="+91 98765 43210" aria-describedby="ePhone">
+          <span class="err" id="ePhone"></span>
+        </div>
+        <div class="actions">
+          <button class="btn btn-primary" type="submit">Save profile</button>
+          <button class="btn btn-quiet" type="button" id="resetBtn">Cancel edits</button>
+        </div>
+        <p class="status" id="profStatus" role="status" aria-live="polite"></p>
+      </form>
+
+      <section class="card install" aria-labelledby="instTitle">
+        <h2 id="instTitle">Install on your phone</h2>
+        <p class="muted" id="installText">In Chrome on Android, open the menu and choose Install app or Add to Home screen. Installing needs HTTPS hosting (for example GitHub Pages) or localhost.</p>
+        <button class="btn btn-primary" id="installBtn" type="button" hidden>Install app</button>
+      </section>
+    </section>
+  </main>
+</div>
+
+<dialog id="sosDialog" aria-labelledby="sosTitle">
+  <h2 id="sosTitle">Call your emergency contact?</h2>
+  <p>This will open your phone's dialer for <strong id="dName"></strong> at <strong id="dNum"></strong>. You can still cancel there.</p>
+  <div class="actions">
+    <a class="btn btn-sos" id="callLink" href="#">Call now</a>
+    <button class="btn btn-quiet" type="button" data-close>Cancel</button>
+  </div>
+</dialog>
+
+<dialog id="clearDialog" aria-labelledby="clearTitle">
+  <h2 id="clearTitle">Clear all saved readings?</h2>
+  <p>This removes every demo reading stored on this device. It can't be undone.</p>
+  <div class="actions">
+    <button class="btn btn-primary" type="button" id="confirmClear">Clear history</button>
+    <button class="btn btn-quiet" type="button" data-close>Keep history</button>
+  </div>
+</dialog>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+<script src="script.js"></script>
+</body>
+</html>
