@@ -190,3 +190,90 @@ dialog strong{color:var(--navy)}
 .res-num small{font-size:1rem;font-weight:600;color:var(--navy-2);letter-spacing:0}
 #scanResult p{margin-bottom:10px}
 #scanResult p.small{font-size:.85rem}
+/* AUTHENTICATION SCREEN */
+.auth-screen {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  background: var(--bg);
+}
+
+.auth-screen[hidden] {
+  display: none !important;
+}
+
+.auth-card {
+  width: 100%;
+  max-width: 420px;
+  padding: 36px;
+  background: var(--white);
+  border: 1px solid var(--line);
+  border-radius: 20px;
+  box-shadow: 0 20px 60px rgba(11, 37, 69, 0.08);
+}
+
+.auth-brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--navy);
+  font-size: 21px;
+  font-weight: 700;
+  margin-bottom: 38px;
+}
+
+.auth-brand .ico {
+  width: 28px;
+  height: 28px;
+  color: var(--teal);
+}
+
+.auth-heading {
+  margin-bottom: 28px;
+}
+
+.auth-heading h1 {
+  color: var(--navy);
+  font-size: 28px;
+  margin: 0 0 8px;
+}
+
+.auth-heading p {
+  margin: 0;
+}
+
+.auth-card .field {
+  margin-bottom: 18px;
+}
+
+.auth-card input {
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.auth-card .btn-block {
+  width: 100%;
+  margin-top: 8px;
+}
+
+.auth-footer {
+  text-align: center;
+  margin: 24px 0 0;
+}
+
+#loginStatus {
+  min-height: 20px;
+  font-size: 13px;
+}
+
+.shell[hidden] {
+  display: none !important;
+}
+
+@media (max-width: 480px) {
+  .auth-card {
+    padding: 26px 22px;
+  }
+}
