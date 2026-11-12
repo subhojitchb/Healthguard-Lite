@@ -851,6 +851,76 @@ async function handleLogin(ev) {
     button.textContent = 'Sign in';
   }
 }
+  
+/* ---------- Registration ---------- */
+
+function showRegisterPanel() {
+  $('#loginPanel').hidden = true;
+  $('#registerPanel').hidden = false;
+  $('#registerStatus').textContent = '';
+}
+
+function showLoginPanel() {
+  $('#registerPanel').hidden = true;
+  $('#loginPanel').hidden = false;
+  $('#loginStatus').textContent = '';
+}
+
+async function handleRegister(ev) {
+  ev.preventDefault();
+
+  const name = $('#registerName').value.trim();
+  const email = $('#registerEmail').value.trim();
+  const password = $('#registerPassword').value;
+  const status = $('#registerStatus');
+  const button = $('#registerBtn');
+
+  status.textContent = '';
+
+  if (name.length < 2 || name.length > 100) {
+    status.textContent = 'Name must contain 2–100 characters.';
+    return;
+  }
+
+  if (password.length < 12) {
+    status.textContent = 'Password must be at least 12 characters.';
+    return;
+  }
+
+  button.disabled = true;
+  button.textContent = 'Creating account...';
+
+  try {
+    const response = await fetch(`${API_BASE}/auth/register`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ name, email, password })
+    });
+
+    const data = await response.json();
+
+    if (!response.ok || !data.success) {
+      throw new Error(data.message || 'Unable to create account.');
+    }
+
+    $('#registerForm').reset();
+    $('#loginEmail').value = email;
+    showLoginPanel();
+
+    $('#loginStatus').textContent =
+      'Account created successfully! Sign in with your new credentials.';
+
+  } catch (error) {
+    status.textContent =
+      error.message || 'Unable to connect to the server.';
+  } finally {
+    button.disabled = false;
+    button.textContent = 'Create account';
+  }
+}
+
 
   /* ---------- Navigation ---------- */
   function route() {
@@ -901,6 +971,9 @@ async function handleLogin(ev) {
   /* ---------- Init ---------- */
   function init() {
     $('#loginForm').addEventListener('submit', handleLogin);
+    $('#registerForm').addEventListener('submit', handleRegister);
+    $('#showRegister').addEventListener('click', showRegisterPanel);
+    $('#showLogin').addEventListener('click', showLoginPanel);
     updateGreeting();
     renderHeart(false);
     renderRecent();
