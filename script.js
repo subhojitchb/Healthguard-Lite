@@ -900,6 +900,7 @@ async function handleLogin(ev) {
 
   /* ---------- Init ---------- */
   function init() {
+    $('#loginForm').addEventListener('submit', handleLogin);
     updateGreeting();
     renderHeart(false);
     renderRecent();
