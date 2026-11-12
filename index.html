@@ -25,6 +25,54 @@
   </defs>
 </svg>
 
+  <!-- AUTHENTICATION SCREEN -->
+<section id="authScreen" class="auth-screen">
+  <div class="auth-card">
+    <div class="auth-brand">
+      <svg class="ico"><use href="#i-heart"/></svg>
+      <span>HealthGuard <b>Lite</b></span>
+    </div>
+
+    <div class="auth-heading">
+      <h1>Welcome back</h1>
+      <p class="muted">Sign in to access your health dashboard.</p>
+    </div>
+
+    <form id="loginForm" novalidate>
+      <div class="field">
+        <label for="loginEmail">Email address</label>
+        <input
+          id="loginEmail"
+          type="email"
+          placeholder="you@example.com"
+          autocomplete="username"
+          required
+        >
+      </div>
+
+      <div class="field">
+        <label for="loginPassword">Password</label>
+        <input
+          id="loginPassword"
+          type="password"
+          placeholder="Enter your password"
+          autocomplete="current-password"
+          required
+        >
+      </div>
+
+      <p id="loginStatus" class="status" role="status" aria-live="polite"></p>
+
+      <button class="btn btn-primary btn-block" id="loginBtn" type="submit">
+        Sign in
+      </button>
+    </form>
+
+    <p class="muted small auth-footer">
+      Secure account authentication · HealthGuard Lite
+    </p>
+  </div>
+</section>
 <div class="shell">
   <nav class="nav" aria-label="Main">
     <div class="nav-brand" aria-hidden="true">
