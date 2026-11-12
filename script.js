@@ -807,6 +807,51 @@ let authToken = null;
     renderEmergency();
   }
 
+  /* ---------- Backend Authentication ---------- */
+
+async function handleLogin(ev) {
+  ev.preventDefault();
+
+  const email = $('#loginEmail').value.trim();
+  const password = $('#loginPassword').value;
+  const status = $('#loginStatus');
+  const button = $('#loginBtn');
+
+  status.textContent = '';
+  button.disabled = true;
+  button.textContent = 'Signing in...';
+
+  try {
+    const response = await fetch(`${API_BASE}/auth/login`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ email, password })
+    });
+
+    const data = await response.json();
+
+    if (!response.ok || !data.success) {
+      throw new Error(data.message || 'Login failed. Check your credentials.');
+    }
+
+    authToken = data.token;
+    localStorage.setItem('healthguardlite.auth.token', authToken);
+
+    $('#authScreen').hidden = true;
+    $('#appShell').hidden = false;
+
+    status.textContent = '';
+    toast('Welcome back!');
+  } catch (error) {
+    status.textContent = error.message || 'Unable to connect to the server.';
+  } finally {
+    button.disabled = false;
+    button.textContent = 'Sign in';
+  }
+}
+
   /* ---------- Navigation ---------- */
   function route() {
     const name = VIEWS.includes(location.hash.slice(1)) ? location.hash.slice(1) : 'home';
