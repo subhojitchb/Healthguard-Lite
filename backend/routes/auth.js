@@ -3,6 +3,7 @@ const express = require("express");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const { pool } = require("../db");
+const authenticateToken = require("../middleware/auth");
 
 const router = express.Router();
 
@@ -192,6 +193,45 @@ router.post("/login", async (req, res) => {
     return res.status(500).json({
       success: false,
       message: "Unable to complete login"
+    });
+  }
+});
+
+// VERIFY CURRENT SESSION
+router.get("/me", authenticateToken, async (req, res) => {
+  try {
+    const result = await pool.query(
+      `SELECT users.id, users.email, profiles.display_name
+       FROM users
+       LEFT JOIN profiles ON profiles.user_id = users.id
+       WHERE users.id = $1`,
+      [req.user.id]
+    );
+
+    if (result.rows.length === 0) {
+      return res.status(401).json({
+        success: false,
+        message: "User account not found"
+      });
+    }
+
+    const user = result.rows[0];
+
+    return res.status(200).json({
+      success: true,
+      user: {
+        id: user.id,
+        email: user.email,
+        name: user.display_name || ""
+      }
+    });
+
+  } catch (error) {
+    console.error("Session verification error:", error.message);
+
+    return res.status(500).json({
+      success: false,
+      message: "Unable to verify session"
     });
   }
 });
