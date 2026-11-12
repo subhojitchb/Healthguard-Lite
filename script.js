@@ -16,6 +16,8 @@
   const $$ = (s, r = document) => Array.from(r.querySelectorAll(s));
   const reduceMotion = () => !!(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
   const isHttp = location.protocol === 'http:' || location.protocol === 'https:';
+  const API_BASE = 'https://healthguard-lite.onrender.com/api';
+let authToken = null;
 
   /* ---------- Safe storage ---------- */
   const store = {
