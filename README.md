@@ -1,6 +1,6 @@
 # HealthGuard Lite (Web)
 
-A mobile-first health dashboard and emergency call shortcut built with plain HTML, CSS and JavaScript. No frameworks, no build step, no backend.
+A mobile-first health dashboard and emergency call shortcut built with plain HTML, CSS and JavaScript. 
 
 **Important: HealthGuard Lite is a wellness app, not a medical device.** Heart rate is an estimate from your fingertip and camera, steps are estimated from motion sensors, and blood oxygen (SpO₂) is never estimated.
 
